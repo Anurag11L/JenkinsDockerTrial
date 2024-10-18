@@ -5,7 +5,7 @@ pipeline {
         stage('Clone Repository') {
             steps {
                 // If you're storing your files in a Git repository, clone it
-                git 'https://github.com/your-repo/your-project.git'
+                git branch: 'main', url: 'https://github.com/Anurag11L/JenkinsDockerTrial'
             }
         }
         
@@ -27,16 +27,6 @@ pipeline {
             }
         }
 
-        // Optional: Push the Docker image to a Docker registry (if needed)
-        stage('Push Docker Image') {
-            steps {
-                script {
-                    docker.withRegistry('', 'docker-credentials-id') {
-                        dockerImage.push('latest')
-                    }
-                }
-            }
-        }
     }
     
     post {
