@@ -4,32 +4,25 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
+                // Clone your repository (adjust the URL as needed)
                 git branch: 'main', url: 'https://github.com/Anurag11L/JenkinsDockerTrial'
             }
         }
-
+        
         stage('Build Docker Image') {
             steps {
                 script {
-                    try {
-                        dockerImage = docker.build('my-simple-web-app')
-                    } catch (Exception e) {
-                        echo "Docker Build Failed: ${e.getMessage()}"
-                        error("Docker build failed. Check the logs for details.")
-                    }
+                    // Build the Docker image
+                    bat 'docker build -t my-docker-image .'
                 }
             }
         }
-
+        
         stage('Run Docker Container') {
             steps {
                 script {
-                    try {
-                        dockerImage.run('-p 8080:80')
-                    } catch (Exception e) {
-                        echo "Docker Run Failed: ${e.getMessage()}"
-                        error("Docker run failed. Check the logs for details.")
-                    }
+                    // Run the Docker container (detached mode)
+                    bat 'docker run -d -p 80:80 my-docker-image'
                 }
             }
         }
@@ -37,7 +30,12 @@ pipeline {
 
     post {
         always {
-            cleanWs()
+            // Clean up (optional)
+            script {
+                // Stop and remove the container if it exists
+                bat 'docker stop $(docker ps -q --filter ancestor=my-docker-image) || exit 0'
+                bat 'docker rmi my-docker-image || exit 0'
+            }
         }
     }
 }
